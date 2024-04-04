@@ -5,6 +5,8 @@
   import { goto, invalidate } from '$app/navigation'
   import { fetcher } from '@/fetcher.js'
   import TimeEntryDialog from '../time-entry-dialog.svelte'
+  import { createQuery } from '@tanstack/svelte-query'
+  import TextSkeleton from '@/components/skeletons/text-skeleton.svelte'
 
   async function deleteProject() {
     await fetcher(`projects/${$page.params.id}`, {
@@ -15,23 +17,38 @@
     goto('/dashboard/projects')
   }
 
-  export let data
-
   let modalOpen = false
+
+  const query = createQuery({
+    queryKey: ['project-' + $page.params.id],
+    queryFn: () => fetcher(`projects/${$page.params.id}`),
+  })
 </script>
 
 <h1>
-  {data.project.name}
+  {#if $query.isSuccess}
+    {$query.data.name}
+  {:else}
+    <TextSkeleton />
+  {/if}
 </h1>
 
 <h2>Time entries</h2>
 
 <ul>
-  {#each data.project.time_entries as timeEntry}
-    <li>
-      {timeEntry.description}
-    </li>
-  {/each}
+  {#if $query.isSuccess}
+    {#each $query.data.time_entries as timeEntry}
+      <li>
+        {timeEntry.description}
+      </li>
+    {/each}
+  {:else}
+    {#each Array.from({ length: 10 }).map((_, i) => i) as _}
+      <li>
+        <TextSkeleton />
+      </li>
+    {/each}
+  {/if}
 </ul>
 
 <Button on:click={() => (modalOpen = true)}>New time entry</Button>
@@ -41,4 +58,4 @@
   Delete
 </Button>
 
-<TimeEntryDialog bind:modalOpen project={data.project} />
+<TimeEntryDialog bind:modalOpen project={$query.data} />

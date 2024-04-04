@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { storeClient } from '@maximecd/schemas'
-  import { setError, superForm } from 'sveltekit-superforms'
+  import { storeClient, storeProject } from '@maximecd/schemas'
+  import { defaults, setError, superForm } from 'sveltekit-superforms'
   import { zod } from 'sveltekit-superforms/adapters'
 
   import * as Form from '$lib/components/ui/form'
@@ -15,12 +15,11 @@
   import { cn } from '@/utils.js'
   import { buttonVariants } from '@/components/ui/button/index.js'
   import { tick } from 'svelte'
+  import { createQuery } from '@tanstack/svelte-query'
 
-  export let data
-
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(storeProject)), {
     SPA: true,
-    validators: zod(storeClient),
+    validators: zod(storeProject),
     onUpdate: async ({ form }) => {
       if (!form.valid) {
         return
@@ -50,8 +49,13 @@
     })
   }
 
+  const clients = createQuery({
+    queryKey: ['clients'],
+    queryFn: () => fetcher('clients'),
+  })
+
   $: selectedValue =
-    data.clients.find((client) => client.id === $formData.clientId)?.name ?? 'Select a client'
+    $clients.data?.find((client) => client.id === $formData.clientId)?.name ?? 'Select a client'
 </script>
 
 <Card.Root class="max-w-lg w-full mx-auto">
@@ -91,7 +95,7 @@
               <Command.Input autofocus placeholder="Search client..." class="h-9" />
               <Command.Empty>No client found.</Command.Empty>
               <Command.Group>
-                {#each data.clients as client}
+                {#each $clients.data as client}
                   <Command.Item
                     value={`${client.id}`}
                     onSelect={() => {

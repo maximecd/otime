@@ -13,7 +13,6 @@ export default class ProjectsController {
       .preload('client')
       .join('clients', 'projects.client_id', 'clients.id')
       .where('clients.user_id', auth.user!.id)
-    console.log(projects)
 
     return projects
   }
@@ -71,7 +70,7 @@ export default class ProjectsController {
    * Delete record
    */
   async destroy({ params, bouncer }: HttpContext) {
-    const project = await Project.findOrFail(params.id)
+    const project = await Project.query().preload('client').where('id', params.id).firstOrFail()
 
     await bouncer.with(ClientPolicy).authorize('owner', project.client)
 

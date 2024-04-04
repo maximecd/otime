@@ -1,15 +1,13 @@
 <script lang="ts">
   import * as Table from '$lib/components/ui/table'
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
-  import * as Dialog from '$lib/components/ui/dialog'
-  import * as Form from '$lib/components/ui/form'
-  import { Input } from '$lib/components/ui/input'
   import Button from '$lib/components/ui/button/button.svelte'
 
   import { Ellipsis, SquareArrowOutUpRight } from 'lucide-svelte'
   import TimeEntryDialog from './time-entry-dialog.svelte'
-
-  export let data
+  import { createQuery } from '@tanstack/svelte-query'
+  import { fetcher } from '$lib/fetcher'
+  import TextSkeleton from '$lib/components/skeletons/text-skeleton.svelte'
 
   type Project = {
     id: number
@@ -24,11 +22,20 @@
     project = p
     modalOpen = true
   }
+
+  const query = createQuery({
+    queryKey: ['projects'],
+    queryFn: () => fetcher('projects'),
+  })
 </script>
 
 <div class="flex justify-between mb-2 items-end">
   <h2 class="text-lg font-semibold">
-    {data.projects.length} Project{data.projects.length > 1 ? 's' : ''}
+    {#if $query.isSuccess}
+      {$query.data.length} Project{$query.data.length > 1 ? 's' : ''}
+    {:else}
+      <TextSkeleton />
+    {/if}
   </h2>
   <Button href="/dashboard/projects/new">New project</Button>
 </div>
@@ -36,7 +43,6 @@
 <Table.Root>
   <Table.Header>
     <Table.Row>
-      <Table.Head class="w-[100px]">ID</Table.Head>
       <Table.Head>Name</Table.Head>
       <Table.Head>Client</Table.Head>
       <Table.Head>Total Duration</Table.Head>
@@ -44,44 +50,56 @@
     </Table.Row>
   </Table.Header>
   <Table.Body>
-    {#each data.projects as project}
-      <Table.Row>
-        <Table.Cell>#{project.id}</Table.Cell>
-        <Table.Cell class="font-medium">
-          <a href="/dashboard/projects/{project.id}" class="hover:underline">
-            {project.name}
-          </a>
-        </Table.Cell>
-        <Table.Cell>
-          <a href={`/dashboard/clients/${project.client.id}`} class="flex items-center"
-            >{project.client.name}
-            <SquareArrowOutUpRight class="h-3 w-3 ml-2" />
-          </a>
-        </Table.Cell>
-        <Table.Cell>
-          {project.totalDurationHuman}
-        </Table.Cell>
-        <Table.Cell class="text-right">
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild let:builder>
-              <Button size="icon" variant="ghost" builders={[builder]}>
-                <Ellipsis class="h-4 w-4" />
-              </Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              <DropdownMenu.Group>
-                <DropdownMenu.Item href="/dashboard/projects/{project.id}"
-                  >View detail</DropdownMenu.Item
-                >
-                <DropdownMenu.Item on:click={() => openTimeEntryDialog(project)}
-                  >Add time entry</DropdownMenu.Item
-                >
-              </DropdownMenu.Group>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        </Table.Cell>
-      </Table.Row>
-    {/each}
+    {#if $query.isSuccess}
+      {#each $query.data as project}
+        <Table.Row>
+          <Table.Cell class="font-medium">
+            <a href="/dashboard/projects/{project.id}" class="hover:underline">
+              {project.name}
+            </a>
+          </Table.Cell>
+          <Table.Cell>
+            <a href={`/dashboard/clients/${project.client.id}`} class="flex items-center"
+              >{project.client.name}
+              <SquareArrowOutUpRight class="h-3 w-3 ml-2" />
+            </a>
+          </Table.Cell>
+          <Table.Cell>
+            {project.totalDurationHuman}
+          </Table.Cell>
+          <Table.Cell class="text-right">
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild let:builder>
+                <Button size="icon" variant="ghost" builders={[builder]}>
+                  <Ellipsis class="h-4 w-4" />
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <DropdownMenu.Group>
+                  <DropdownMenu.Item href="/dashboard/projects/{project.id}"
+                    >View detail</DropdownMenu.Item
+                  >
+                  <DropdownMenu.Item on:click={() => openTimeEntryDialog(project)}
+                    >Add time entry</DropdownMenu.Item
+                  >
+                </DropdownMenu.Group>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </Table.Cell>
+        </Table.Row>
+      {/each}
+    {:else if $query.isError}
+      An error has occurred
+    {:else}
+      {#each Array.from({ length: 10 }).map((_, i) => i) as _}
+        <Table.Row>
+          <Table.Cell><TextSkeleton /></Table.Cell>
+          <Table.Cell><TextSkeleton /></Table.Cell>
+          <Table.Cell><TextSkeleton /></Table.Cell>
+          <Table.Cell><TextSkeleton /></Table.Cell>
+        </Table.Row>
+      {/each}
+    {/if}
   </Table.Body>
 </Table.Root>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { loginSchema } from '@maximecd/schemas'
 
-  import { setError, superForm } from 'sveltekit-superforms'
+  import { defaults, setError, superForm } from 'sveltekit-superforms'
   import { zod } from 'sveltekit-superforms/adapters'
 
   import * as Form from '$lib/components/ui/form'
@@ -11,8 +11,6 @@
   import { goto } from '$app/navigation'
   import { authStore } from '@/stores/authStore.js'
 
-  export let data
-
   type UserRes = {
     user: {
       email: string
@@ -20,7 +18,7 @@
     }
   }
 
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(loginSchema)), {
     SPA: true,
     validators: zod(loginSchema),
     onUpdate: async ({ form }) => {

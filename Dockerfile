@@ -11,13 +11,11 @@ RUN pnpm run -r build
 RUN pnpm deploy --filter=web --prod /prod/web
 RUN pnpm deploy --filter=api --prod /prod/api
 
-FROM base AS web
-WORKDIR /prod/app
-COPY --from=builder /prod/web/ .
-COPY --from=builder /prod/api/node_modules node_modules
+FROM nginx:stable AS web
+COPY --from=builder /prod/web/build /usr/share/nginx/html
+COPY ./apps/web/nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 3000
-CMD [ "node", "build" ]
+EXPOSE 80
 
 FROM base AS api
 WORKDIR /prod/api

@@ -6,7 +6,7 @@
   import * as Form from '$lib/components/ui/form'
   import { Input } from '$lib/components/ui/input'
 
-  import { defaults, superForm } from 'sveltekit-superforms'
+  import { defaults, superForm, type Infer, type SuperValidated } from 'sveltekit-superforms'
   import { zod } from 'sveltekit-superforms/adapters'
 
   import { browser } from '$app/environment'
@@ -14,10 +14,14 @@
   import { storeTimeEntry } from '@maximecd/schemas'
 
   import { fetcher } from '$lib/fetcher'
+  import { createMutation, useQueryClient } from '@tanstack/svelte-query'
 
   type Project = {
     id: number
     name: string
+    time_entries: Array<{
+      description: string
+    }>
   }
 
   function mediaQuery(query: string) {
@@ -25,7 +29,7 @@
     return window.matchMedia(query).matches
   }
 
-  export let project: Project | null
+  export let project: Project
 
   export let modalOpen: boolean
 
@@ -39,21 +43,18 @@
       if (!form.valid) {
         return
       }
-
       try {
-        await fetcher('time-entries', {
-          method: 'POST',
-          form,
-        })
+        modalOpen = false
+        await $addTimeEntryMutation.mutateAsync(form)
       } catch (error) {
         return
       }
-
-      modalOpen = false
     },
   })
 
   const { form: formData, enhance } = form
+
+  const client = useQueryClient()
 
   // on Open state change
   $: if (modalOpen && project) {
@@ -63,6 +64,46 @@
       },
     })
   }
+
+  const addTimeEntryMutation = createMutation({
+    mutationFn: async (form: SuperValidated<Infer<typeof storeTimeEntry>>) => {
+      await fetcher('time-entries', {
+        method: 'POST',
+        form,
+      })
+    },
+    onMutate: async (form: SuperValidated<Infer<typeof storeTimeEntry>>) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await client.cancelQueries({ queryKey: [`project-${project.id}`] })
+
+      // Snapshot the previous value
+      const previousProjectData = client.getQueryData<Project>([`project-${project.id}`])
+
+      // Optimistically update to the new value
+      if (previousProjectData) {
+        client.setQueryData<Project>([`project-${project.id}`], {
+          ...previousProjectData,
+          time_entries: [
+            ...previousProjectData.time_entries,
+            {
+              description: form.data.description,
+            },
+          ],
+        })
+      }
+      return { previousProjectData }
+    },
+    // If the mutation fails, use the context returned from onMutate to roll back
+    onError: (err: any, variables: any, context: any) => {
+      if (context?.previousTodos) {
+        client.setQueryData<Project>([`project-${project.id}`], context.previousProjectData)
+      }
+    },
+    // Always refetch after error or success:
+    onSettled: () => {
+      client.invalidateQueries({ queryKey: [`project-${project.id}`] })
+    },
+  })
 </script>
 
 {#if isDesktop}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { storeClient } from '@maximecd/schemas'
-  import { setError, superForm } from 'sveltekit-superforms'
+  import { defaults, setError, superForm } from 'sveltekit-superforms'
   import { zod } from 'sveltekit-superforms/adapters'
 
   import * as Form from '$lib/components/ui/form'
@@ -9,9 +9,7 @@
   import { goto, invalidate } from '$app/navigation'
   import { fetcher } from '@/fetcher.js'
 
-  export let data
-
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(storeClient)), {
     SPA: true,
     validators: zod(storeClient),
     onUpdate: async ({ form }) => {

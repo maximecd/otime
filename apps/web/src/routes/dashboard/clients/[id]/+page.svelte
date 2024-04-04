@@ -4,6 +4,8 @@
   import { page } from '$app/stores'
   import { goto, invalidate } from '$app/navigation'
   import { fetcher } from '@/fetcher.js'
+  import { createQuery } from '@tanstack/svelte-query'
+  import TextSkeleton from '@/components/skeletons/text-skeleton.svelte'
 
   async function deleteClient() {
     await fetcher(`clients/${$page.params.id}`, {
@@ -20,11 +22,18 @@
     goto('/dashboard/clients')
   }
 
-  export let data
+  const query = createQuery({
+    queryKey: ['clients', $page.params.id],
+    queryFn: () => fetcher(`clients/${$page.params.id}`),
+  })
 </script>
 
 <h1>
-  {data.client.name}
+  {#if $query.isSuccess}
+    {$query.data.name}
+  {:else}
+    <TextSkeleton />
+  {/if}
 </h1>
 
 <Button variant="destructive" on:click={deleteClient}>

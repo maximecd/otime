@@ -1,7 +1,7 @@
 <script lang="ts">
   import { registerSchema } from '@maximecd/schemas'
 
-  import { superForm } from 'sveltekit-superforms'
+  import { defaults, superForm } from 'sveltekit-superforms'
   import { zod } from 'sveltekit-superforms/adapters'
   import * as Form from '$lib/components/ui/form'
   import { Input } from '$lib/components/ui/input'
@@ -9,9 +9,7 @@
   import { fetcher } from '@/fetcher.js'
   import { authStore } from '@/stores/authStore.js'
 
-  export let data
-
-  const form = superForm(data.form, {
+  const form = superForm(defaults(zod(registerSchema)), {
     SPA: true,
     validators: zod(registerSchema),
     onUpdate: async ({ form }) => {
