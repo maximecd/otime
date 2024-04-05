@@ -2,7 +2,7 @@ import Project from '#models/project'
 import TimeEntry from '#models/time_entry'
 import ClientPolicy from '#policies/client_policy'
 import type { HttpContext } from '@adonisjs/core/http'
-import { storeTimeEntry } from '@maximecd/schemas'
+import { storeTimeEntry } from '../../../../packages/schemas/src/index.js'
 
 export default class TimeEntriesController {
   /**

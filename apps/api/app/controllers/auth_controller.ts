@@ -2,7 +2,7 @@
 
 import User from '#models/user'
 import { HttpContext } from '@adonisjs/core/http'
-import { loginSchema, registerSchema } from '@maximecd/schemas'
+import { loginSchema, registerSchema } from '../../../../packages/schemas/src/index.js'
 
 export default class AuthController {
   async login({ request, auth, response }: HttpContext) {

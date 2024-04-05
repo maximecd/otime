@@ -1,7 +1,7 @@
 import Client from '#models/client'
 import ClientPolicy from '#policies/client_policy'
 import type { HttpContext } from '@adonisjs/core/http'
-import { storeClient } from '@maximecd/schemas'
+import { storeClient } from '../../../../packages/schemas/src/index.js'
 
 export default class ClientsController {
   /**
