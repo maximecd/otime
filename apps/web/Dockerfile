@@ -11,7 +11,7 @@ RUN npm install -g pnpm
 COPY . .
 
 # Install dependencies and build
-RUN pnpm --filter web install
+RUN pnpm --filter web install --frozen-lockfile
 RUN pnpm --filter web run build 
 
 # Final stage

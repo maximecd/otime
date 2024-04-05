@@ -2,7 +2,7 @@ import Client from '#models/client'
 import Project from '#models/project'
 import ClientPolicy from '#policies/client_policy'
 import type { HttpContext } from '@adonisjs/core/http'
-import { storeProject } from '../../../../packages/schemas/src/index.js'
+import { storeProject } from '@maximecd/schemas'
 
 export default class ProjectsController {
   /**

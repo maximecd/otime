@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    image: ghcr.io/maximecd/timetracker-web:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.timetracker-web.rule=Host(`timetracker.maximecd.com`)"
+      - "traefik.http.services.timetracker-frontend.loadbalancer.server.port=80"
+  api:
+    image: ghcr.io/maximecd/timetracker-api:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.timetracker-api.rule=Host(`api.timetracker.maximecd.com`)"
+      - "traefik.http.services.timetracker-api.loadbalancer.server.port=80"
+  database:
+    image: postgres:16.2
+  
+networks:
+  traefik:
+    external: true
