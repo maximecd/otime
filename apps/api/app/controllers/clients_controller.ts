@@ -66,7 +66,7 @@ export default class ClientsController {
     await client.delete()
 
     return {
-      message: 'Record deleted',
+      message: 'Client deleted',
     }
   }
 }
