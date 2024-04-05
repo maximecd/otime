@@ -15,3 +15,6 @@ env:
 jobs:
   build-and-push-image:
     runs-on: self-hosted
+    steps:
+      # log hello world
+      - run: echo "Hello, world!"
