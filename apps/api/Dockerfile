@@ -24,8 +24,6 @@ RUN pnpm deploy --filter=api --prod /prod
 # Production stage
 FROM base
 ENV NODE_ENV=production
-ENV PORT=8080
-ENV SESSION_DRIVER=cookie
 WORKDIR /app
 COPY --from=production-deps /prod/node_modules ./node_modules
 COPY --from=builder /app/apps/api/build .
