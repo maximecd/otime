@@ -1,16 +1,8 @@
 # Builder stage
 FROM node:20-alpine as builder
-
-# Set the working directory
 WORKDIR /app
-
-# Install pnpm
 RUN npm install -g pnpm
-
-# Copy the entire monorepo
 COPY . .
-
-# Install dependencies and build
 RUN pnpm --filter web install --frozen-lockfile
 RUN pnpm --filter web run build 
 

@@ -2,7 +2,7 @@ import { dev } from '$app/environment'
 import { ApiFormError } from '@/errors'
 import { setError, type SuperValidated } from 'sveltekit-superforms'
 
-const baseUrl = dev ? 'http://localhost:5173/api/' : 'http://localhost:4001/api/'
+const baseUrl = dev ? 'http://localhost:5173/api/' : 'https://api.timetracker.maximecd.com/'
 
 type FetcherOptions<T extends Record<string, unknown>> = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
