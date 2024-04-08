@@ -14,9 +14,7 @@ const TimeEntriesController = () => import('#controllers/time_entries_controller
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
-/*
-Auth
-*/
+/*Auth*/
 router
   .group(() => {
     router.post('login', [AuthController, 'login'])
