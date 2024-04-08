@@ -18,5 +18,5 @@ FROM node:20-alpine AS runtime
 WORKDIR /app
 COPY --from=prod-deps /deploy/node_modules node_modules
 COPY --from=builder /app/apps/api/build .
-EXPOSE 3000
+EXPOSE 8080
 CMD ["node", "bin/server.js"]
