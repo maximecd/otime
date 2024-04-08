@@ -7,3 +7,6 @@ README.md
 # SvelteKit
 /apps/web/.svelte-kit
 /apps/web/build
+
+# Api
+/apps/api/docker-compose.yml

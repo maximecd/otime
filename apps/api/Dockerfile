@@ -1,31 +1,22 @@
-# Base image
+# Base
 FROM node:20-alpine as base
+WORKDIR /app
 RUN npm install -g pnpm
-
-# All deps stage
-FROM base AS deps
-WORKDIR /app
 COPY . .
+
+# Builder stage
+FROM base as builder
 RUN pnpm --filter api install --frozen-lockfile
+RUN pnpm --filter api run build 
 
-# Build stage
-FROM base AS builder
-COPY --from=deps . .
-WORKDIR /app/apps/api
-RUN node ace build
+# Prod deps
+FROM base as prod-deps
+RUN pnpm deploy --filter api --prod /deploy
 
-# Production only deps stage
-FROM base AS production-deps
+# Final stage
+FROM node:20-alpine AS runtime
 WORKDIR /app
-COPY . .
-RUN pnpm --filter api install --frozen-lockfile
-RUN pnpm deploy --filter=api --prod /prod
-
-# Production stage
-FROM base
-ENV NODE_ENV=production
-WORKDIR /app
-COPY --from=production-deps /prod/node_modules ./node_modules
+COPY --from=prod-deps /deploy/node_modules node_modules
 COPY --from=builder /app/apps/api/build .
-EXPOSE 8080
-CMD ["node", "./bin/server.js"]
+EXPOSE 3000
+CMD ["node", "bin/server.js"]

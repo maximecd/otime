@@ -14,12 +14,6 @@ const TimeEntriesController = () => import('#controllers/time_entries_controller
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
-router.get('/', async () => {
-  return {
-    hello: 'world',
-  }
-})
-
 /*
 Auth
 */
