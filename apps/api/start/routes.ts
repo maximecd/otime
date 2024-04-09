@@ -18,6 +18,7 @@ router.get('/healthcheck', () => {
   return { status: 'ok' }
 })
 
+// Auth
 router
   .group(() => {
     router.post('login', [AuthController, 'login'])
