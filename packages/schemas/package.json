@@ -1,12 +1,18 @@
 {
   "type": "module",
+  "main": "dist/index.js",
   "name": "@maximecd/schemas",
   "devDependencies": {
+    "typescript": "^5.4.4",
     "zod": "^3.22.4"
   },
   "exports": {
     ".": {
       "import": "./src/index.ts"
     }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
   }
 }
