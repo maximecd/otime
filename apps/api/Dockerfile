@@ -1,22 +1,22 @@
 # Base
 FROM node:20-alpine as base
 WORKDIR /app
-RUN npm install -g pnpm
-COPY . .
 
 # Builder stage
 FROM base as builder
+RUN npm install -g pnpm
+COPY . .
+# Build packages
+RUN pnpm --filter schemas install --frozen-lockfile
+RUN pnpm --filter schemas run build
+# Build api
 RUN pnpm --filter api install --frozen-lockfile
-RUN pnpm --filter api run build 
-
-# Prod deps
-FROM base as prod-deps
+RUN pnpm --filter api run build
 RUN pnpm deploy --filter api --prod /deploy
 
 # Final stage 
-FROM node:20-alpine AS runtime
-WORKDIR /app
-COPY --from=prod-deps /deploy/node_modules node_modules
-COPY --from=builder /app/apps/api/build .
+FROM base AS runtime
+COPY --from=builder /deploy/node_modules node_modules
+COPY --from=builder /deploy/build .
 EXPOSE 8080
 CMD ["node", "bin/server.js"]
