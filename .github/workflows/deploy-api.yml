@@ -14,16 +14,13 @@ env:
 
 jobs:
   build-and-push-image:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Docker
-        uses: crazy-max/ghaction-setup-docker@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
