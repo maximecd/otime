@@ -27,7 +27,6 @@ const sessionConfig = defineConfig({
     httpOnly: true,
     secure: app.inProduction,
     sameSite: 'lax',
-    domain: env.get('SESSION_DOMAIN'),
   },
 
   /**
