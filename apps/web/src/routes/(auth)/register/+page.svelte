@@ -8,6 +8,7 @@
   import * as Card from '$lib/components/ui/card'
   import { fetcher } from '@/fetcher.js'
   import { authStore } from '@/stores/authStore.js'
+  import { goto } from '$app/navigation'
 
   const form = superForm(defaults(zod(registerSchema)), {
     SPA: true,
@@ -35,6 +36,8 @@
         user: data.user,
         status: 'loaded',
       })
+
+      goto('/dashboard')
     },
   })
 

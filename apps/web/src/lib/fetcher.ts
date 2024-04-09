@@ -45,6 +45,7 @@ export async function fetcher<T extends Record<string, unknown>>(
         ...headers,
       },
       signal,
+      credentials: 'include',
     })
 
     const json = await response.json()
