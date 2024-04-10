@@ -140,7 +140,7 @@
     </form>
   </Dialog.Content>
 </Dialog.Root>
-<!-- <Drawer.Root bind:open={modalOpen}>
+<!--<Drawer.Root bind:open={modalOpen}>
   <Drawer.Content>
     <Drawer.Header>
       <Drawer.Title>Add a time entry</Drawer.Title>

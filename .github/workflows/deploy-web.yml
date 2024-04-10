@@ -52,3 +52,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: apps/web/Dockerfile
+  call-webhook:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+    steps:
+      - name: Call Webhook
+        run: |
+          curl -X POST -H "Authorization: Bearer ${{ secrets.WEBHOOK_TOKEN }}" https://coolify.maximecd.com/api/v1/deploy?uuid=e0ok0s8&force=false
