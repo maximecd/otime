@@ -1,9 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeFetch, belongsTo, column, computed, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import Client from '#models/client'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import TimeEntry from '#models/time_entry'
-import type { ModelQueryBuilderContract } from '@adonisjs/lucid/types/model'
 
 export default class Project extends BaseModel {
   @column({ isPrimary: true })

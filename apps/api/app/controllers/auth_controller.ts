@@ -2,7 +2,6 @@
 
 import User from '#models/user'
 import { HttpContext } from '@adonisjs/core/http'
-import hash from '@adonisjs/core/services/hash'
 import { loginSchema, registerSchema, changePasswordSchema } from '@maximecd/schemas'
 
 export default class AuthController {
