@@ -4,7 +4,7 @@
   import Button from '$lib/components/ui/button/button.svelte'
 
   import { Ellipsis, SquareArrowOutUpRight } from 'lucide-svelte'
-  import TimeEntryDialog from './time-entry-dialog.svelte'
+  import TimeEntryDialog from '../../../lib/components/time-entry-dialog.svelte'
   import { createQuery } from '@tanstack/svelte-query'
   import { fetcher } from '$lib/fetcher'
   import TextSkeleton from '$lib/components/skeletons/text-skeleton.svelte'
@@ -29,6 +29,8 @@
   })
 </script>
 
+<h1 class="text-4xl font-bold tracking-tight mb-6">Projects</h1>
+
 <div class="flex justify-between mb-2 items-end">
   <h2 class="text-lg font-semibold">
     {#if $query.isSuccess}
@@ -43,10 +45,10 @@
 <Table.Root>
   <Table.Header>
     <Table.Row>
-      <Table.Head>Name</Table.Head>
-      <Table.Head>Client</Table.Head>
-      <Table.Head>Total Duration</Table.Head>
-      <Table.Head class="text-right">Actions</Table.Head>
+      <Table.Head class="w-[30%]">Name</Table.Head>
+      <Table.Head class="w-[30%]">Client</Table.Head>
+      <Table.Head class="w-[30%]">Total Duration</Table.Head>
+      <Table.Head class="text-right w-[10%]">Actions</Table.Head>
     </Table.Row>
   </Table.Header>
   <Table.Body>
@@ -92,7 +94,11 @@
           <Table.Cell><TextSkeleton /></Table.Cell>
           <Table.Cell><TextSkeleton /></Table.Cell>
           <Table.Cell><TextSkeleton /></Table.Cell>
-          <Table.Cell><TextSkeleton /></Table.Cell>
+          <Table.Cell class="text-right">
+            <Button size="icon" variant="ghost">
+              <Ellipsis class="h-4 w-4" />
+            </Button>
+          </Table.Cell>
         </Table.Row>
       {/each}
     {/if}

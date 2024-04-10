@@ -15,7 +15,7 @@
 
 <div class="min-h-screen flex">
   <Nav />
-  <main class="flex-1 p-4">
+  <main class="container p-2 py-8">
     <slot />
   </main>
 </div>

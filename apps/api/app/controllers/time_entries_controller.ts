@@ -10,9 +10,7 @@ export default class TimeEntriesController {
    */
   async index({ auth }: HttpContext) {
     const timeEntries = await TimeEntry.query()
-      .preload('project', (projectsQuery) => {
-        projectsQuery.preload('client')
-      })
+      .preload('project')
       .join('projects', 'time_entries.project_id', 'projects.id')
       .join('clients', 'projects.client_id', 'clients.id')
       .where('clients.user_id', auth.user!.id)

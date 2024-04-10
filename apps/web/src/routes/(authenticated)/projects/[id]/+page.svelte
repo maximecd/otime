@@ -4,7 +4,7 @@
   import { page } from '$app/stores'
   import { goto, invalidate } from '$app/navigation'
   import { fetcher } from '@/fetcher.js'
-  import TimeEntryDialog from '../time-entry-dialog.svelte'
+  import TimeEntryDialog from '../../../../lib/components/time-entry-dialog.svelte'
   import { createQuery } from '@tanstack/svelte-query'
   import TextSkeleton from '@/components/skeletons/text-skeleton.svelte'
 

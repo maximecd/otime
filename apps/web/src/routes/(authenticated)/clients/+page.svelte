@@ -11,6 +11,8 @@
   })
 </script>
 
+<h1 class="text-4xl font-bold tracking-tight mb-6">Clients</h1>
+
 <div class="flex justify-between mb-2 items-end">
   <h2 class="text-lg font-semibold">
     {#if $query.isSuccess}

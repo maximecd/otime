@@ -1,12 +1,11 @@
 <script lang="ts">
   import * as Dialog from '$lib/components/ui/dialog'
-  import * as Drawer from '$lib/components/ui/drawer'
-  import { Button } from '$lib/components/ui/button'
 
   import * as Form from '$lib/components/ui/form'
   import { Input } from '$lib/components/ui/input'
 
   import { defaults, superForm, type Infer, type SuperValidated } from 'sveltekit-superforms'
+
   import { zod } from 'sveltekit-superforms/adapters'
 
   import { browser } from '$app/environment'
@@ -24,16 +23,17 @@
     }>
   }
 
+  /*
   function mediaQuery(query: string) {
     if (!browser) return false
     return window.matchMedia(query).matches
   }
+  const isDesktop = mediaQuery('(min-width: 768px)')
+  */
 
-  export let project: Project
+  export let project: Project | null = null
 
   export let modalOpen: boolean
-
-  const isDesktop = mediaQuery('(min-width: 768px)')
 
   const form = superForm(defaults(zod(storeTimeEntry)), {
     resetForm: false,
@@ -57,13 +57,13 @@
   const client = useQueryClient()
 
   // on Open state change
-  $: if (modalOpen && project) {
-    form.reset({
-      data: {
-        projectId: project.id,
-      },
-    })
-  }
+  // $: if (modalOpen && project) {
+  //   form.reset({
+  //     data: {
+  //       projectId: project.id,
+  //     },
+  //   })
+  // }
 
   const addTimeEntryMutation = createMutation({
     mutationFn: async (form: SuperValidated<Infer<typeof storeTimeEntry>>) => {
@@ -106,63 +106,67 @@
   })
 </script>
 
-{#if isDesktop}
-  <Dialog.Root bind:open={modalOpen}>
-    <Dialog.Content>
-      <Dialog.Header>
-        <Dialog.Title class="">Add a time entry</Dialog.Title>
-        <Dialog.Description>
-          Project : {project?.name}
-        </Dialog.Description>
-      </Dialog.Header>
-      <form method="POST" use:enhance>
-        <Form.Field {form} name="duration">
-          <Form.Control let:attrs>
-            <Form.Label>Duration (minutes)</Form.Label>
-            <Input {...attrs} bind:value={$formData.duration} type="number" />
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-        <Form.Field {form} name="description">
-          <Form.Control let:attrs>
-            <Form.Label>Description</Form.Label>
-            <Input {...attrs} bind:value={$formData.description} />
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
+<Dialog.Root bind:open={modalOpen}>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>Add a time entry</Dialog.Title>
+      <Dialog.Description>
+        Project : {project?.name}
+      </Dialog.Description>
+    </Dialog.Header>
+    <form method="POST" use:enhance>
+      <Form.Field {form} name="projectId">
+        <Form.Control let:attrs>
+          <Form.Label>Project</Form.Label>
+          <Input {...attrs} bind:value={$formData.projectId} type="number" />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+      <Form.Field {form} name="duration">
+        <Form.Control let:attrs>
+          <Form.Label>Duration (minutes)</Form.Label>
+          <Input {...attrs} bind:value={$formData.duration} type="number" />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+      <Form.Field {form} name="description">
+        <Form.Control let:attrs>
+          <Form.Label>Description</Form.Label>
+          <Input {...attrs} bind:value={$formData.description} />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+      <Form.Button class="w-full">Save Entry</Form.Button>
+    </form>
+  </Dialog.Content>
+</Dialog.Root>
+<!-- <Drawer.Root bind:open={modalOpen}>
+  <Drawer.Content>
+    <Drawer.Header>
+      <Drawer.Title>Add a time entry</Drawer.Title>
+      <Drawer.Description>Project : {project?.name}</Drawer.Description>
+    </Drawer.Header>
+    <form method="POST" use:enhance class="p-4">
+      <Form.Field {form} name="duration">
+        <Form.Control let:attrs>
+          <Form.Label>Duration (minutes)</Form.Label>
+          <Input {...attrs} bind:value={$formData.duration} type="number" />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+      <Form.Field {form} name="description">
+        <Form.Control let:attrs>
+          <Form.Label>Description</Form.Label>
+          <Input {...attrs} bind:value={$formData.description} />
+        </Form.Control>
+        <Form.FieldErrors />
+      </Form.Field>
+      <Drawer.Footer>
         <Form.Button class="w-full">Save Entry</Form.Button>
-      </form>
-    </Dialog.Content>
-  </Dialog.Root>
-{:else}
-  <Drawer.Root bind:open={modalOpen}>
-    <Drawer.Content>
-      <Drawer.Header>
-        <Drawer.Title>Add a time entry</Drawer.Title>
-        <Drawer.Description>Project : {project?.name}</Drawer.Description>
-      </Drawer.Header>
-      <form method="POST" use:enhance class="p-4">
-        <Form.Field {form} name="duration">
-          <Form.Control let:attrs>
-            <Form.Label>Duration (minutes)</Form.Label>
-            <Input {...attrs} bind:value={$formData.duration} type="number" />
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-        <Form.Field {form} name="description">
-          <Form.Control let:attrs>
-            <Form.Label>Description</Form.Label>
-            <Input {...attrs} bind:value={$formData.description} />
-          </Form.Control>
-          <Form.FieldErrors />
-        </Form.Field>
-        <Drawer.Footer>
-          <Form.Button class="w-full">Save Entry</Form.Button>
-          <Drawer.Close asChild let:builder>
-            <Button builders={[builder]} variant="secondary">Cancel</Button>
-          </Drawer.Close>
-        </Drawer.Footer>
-      </form>
-    </Drawer.Content>
-  </Drawer.Root>
-{/if}
+        <Drawer.Close asChild let:builder>
+          <Button builders={[builder]} variant="secondary">Cancel</Button>
+        </Drawer.Close>
+      </Drawer.Footer>
+    </form>
+  </Drawer.Content>
+</Drawer.Root> -->
