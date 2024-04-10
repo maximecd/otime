@@ -20,10 +20,12 @@ router.get('/healthcheck', () => {
 
 router
   .group(() => {
+    router.get('me', [AuthController, 'me']).use(middleware.auth())
     router.post('login', [AuthController, 'login'])
     router.post('register', [AuthController, 'register'])
+    router.post('change-password', [AuthController, 'changePassword']).use(middleware.auth())
     router.post('logout', [AuthController, 'logout']).use(middleware.auth())
-    router.get('me', [AuthController, 'me']).use(middleware.auth())
+    router.delete('delete-account', [AuthController, 'deleteAccount']).use(middleware.auth())
   })
   .prefix('auth')
 

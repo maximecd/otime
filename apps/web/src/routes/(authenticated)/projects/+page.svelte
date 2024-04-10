@@ -37,7 +37,7 @@
       <TextSkeleton />
     {/if}
   </h2>
-  <Button href="/dashboard/projects/new">New project</Button>
+  <Button href="/projects/new">New project</Button>
 </div>
 
 <Table.Root>
@@ -54,19 +54,17 @@
       {#each $query.data as project}
         <Table.Row>
           <Table.Cell class="font-medium">
-            <a href="/dashboard/projects/{project.id}" class="hover:underline">
+            <a href="/projects/{project.id}" class="hover:underline">
               {project.name}
             </a>
           </Table.Cell>
           <Table.Cell>
-            <a href={`/dashboard/clients/${project.client.id}`} class="flex items-center"
+            <a href={`/clients/${project.client.id}`} class="flex items-center"
               >{project.client.name}
               <SquareArrowOutUpRight class="h-3 w-3 ml-2" />
             </a>
           </Table.Cell>
-          <Table.Cell>
-            {project.totalDurationHuman}
-          </Table.Cell>
+          <Table.Cell>//TODO</Table.Cell>
           <Table.Cell class="text-right">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild let:builder>
@@ -76,9 +74,7 @@
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
                 <DropdownMenu.Group>
-                  <DropdownMenu.Item href="/dashboard/projects/{project.id}"
-                    >View detail</DropdownMenu.Item
-                  >
+                  <DropdownMenu.Item href="/projects/{project.id}">View detail</DropdownMenu.Item>
                   <DropdownMenu.Item on:click={() => openTimeEntryDialog(project)}
                     >Add time entry</DropdownMenu.Item
                   >

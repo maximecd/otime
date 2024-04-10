@@ -2,7 +2,8 @@
 
 import User from '#models/user'
 import { HttpContext } from '@adonisjs/core/http'
-import { loginSchema, registerSchema } from '@maximecd/schemas'
+import hash from '@adonisjs/core/services/hash'
+import { loginSchema, registerSchema, changePasswordSchema } from '@maximecd/schemas'
 
 export default class AuthController {
   async login({ request, auth, response }: HttpContext) {
@@ -59,6 +60,28 @@ export default class AuthController {
 
     return response.ok({
       message: 'Logged out',
+    })
+  }
+
+  async deleteAccount({ auth, response }: HttpContext) {
+    await auth.user!.delete()
+
+    response.ok({
+      message: 'Account deleted',
+    })
+  }
+
+  async changePassword({ request, auth, response }: HttpContext) {
+    const { currentPassword, newPassword } = changePasswordSchema.parse(request.body())
+
+    const user = await User.verifyCredentials(auth.user!.email, currentPassword)
+
+    user.password = newPassword
+
+    await user.save()
+
+    return response.ok({
+      message: 'Password changed',
     })
   }
 }

@@ -1,10 +1,7 @@
 {
   "name": "timetracking",
   "scripts": {
-    "dev-api": "concurrently --kill-others 'pnpm --filter api dev' 'docker-compose -f ./apps/api/docker-compose.yml up'",
-    "dev-web": "concurrently --kill-others 'pnpm --filter web dev'",
-    "dev": "concurrently --kill-others 'pnpm dev-api' 'pnpm dev-web'",
-    "build": "pnpm -r build"
+    "dev": "concurrently -n web,api,schemas -p '[{name}]' 'pnpm --filter web dev' 'pnpm --filter api dev client' 'pnpm --filter schemas dev'"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

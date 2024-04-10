@@ -13,8 +13,8 @@
       method: 'DELETE',
     })
 
-    await invalidate('/dashboard/projects')
-    goto('/dashboard/projects')
+    await invalidate('/projects')
+    goto('/projects')
   }
 
   let modalOpen = false

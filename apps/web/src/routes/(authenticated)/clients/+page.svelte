@@ -20,9 +20,8 @@
     {/if}
   </h2>
 
-  <Button href="/dashboard/clients/new">New client</Button>
+  <Button href="/clients/new">New client</Button>
 </div>
-
 <Table.Root>
   <Table.Header>
     <Table.Row>
@@ -36,7 +35,7 @@
         <Table.Row>
           <Table.Cell class="font-medium">{client.name}</Table.Cell>
           <Table.Cell class="text-right">
-            <Button href="/dashboard/clients/{client.id}" size="sm">View</Button>
+            <Button href="/clients/{client.id}" size="sm">View</Button>
           </Table.Cell>
         </Table.Row>
       {/each}

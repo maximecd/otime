@@ -26,21 +26,4 @@ export default class Project extends BaseModel {
 
   @hasMany(() => TimeEntry)
   declare time_entries: HasMany<typeof TimeEntry>
-
-  @beforeFetch()
-  static fetchTotalDuration(query: ModelQueryBuilderContract<typeof Project>) {
-    query.withAggregate('time_entries', (q) => {
-      q.sum('duration').as('total_duration')
-    })
-  }
-
-  @computed()
-  get total_duration() {
-    return Number.parseInt(this.$extras.total_duration)
-  }
-
-  @computed()
-  get total_duration_human() {
-    return DateTime.fromMillis(this.total_duration * 1000 * 60).toFormat('hh:mm')
-  }
 }

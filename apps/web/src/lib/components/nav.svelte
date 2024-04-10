@@ -12,7 +12,6 @@
     name: string
     path: string
     icon: ComponentType<Icon>
-    variant: 'default' | 'ghost'
   }
 
   let routes: Route[] = []
@@ -22,36 +21,18 @@
       name: 'Dashboard',
       path: '/dashboard',
       icon: LayoutDashboard,
-      variant: getVariant($page.route.id, '/dashboard'),
     },
     {
       name: 'Clients',
-      path: '/dashboard/clients',
+      path: '/clients',
       icon: BookUser,
-      variant: getVariant($page.route.id, '/dashboard/clients'),
     },
     {
       name: 'Projects',
-      path: '/dashboard/projects',
+      path: '/projects',
       icon: FolderKanban,
-      variant: getVariant($page.route.id, '/dashboard/projects'),
     },
   ]
-
-  function getVariant(routeId: string | null, path: string) {
-    if (!routeId) return 'ghost'
-
-    let routeSegments = routeId.split('/').filter(Boolean)
-
-    let pathSegments = path.split('/').filter(Boolean)
-
-    if (pathSegments.length === 1) {
-      // dashboard
-      return routeSegments[1] === pathSegments[1] ? 'default' : 'ghost'
-    }
-
-    return routeId.startsWith(path) ? 'default' : 'ghost'
-  }
 </script>
 
 <nav class="border rounded-r-md p-2 min-w-52 flex flex-col">
@@ -60,7 +41,11 @@
   <ul class="flex flex-col gap-1">
     {#each routes as route}
       <li>
-        <Button variant={route.variant} href={route.path} class="w-full justify-start">
+        <Button
+          variant={$page.url.pathname.startsWith(route.path) ? 'default' : 'ghost'}
+          href={route.path}
+          class="w-full justify-start"
+        >
           <svelte:component this={route.icon} class="h-4 w-4 mr-2" />
           {route.name}
         </Button>
@@ -96,6 +81,7 @@
       <DropdownMenu.Group>
         <DropdownMenu.Label>My Account</DropdownMenu.Label>
         <DropdownMenu.Separator />
+        <DropdownMenu.Item href="/settings">Settings</DropdownMenu.Item>
         <DropdownMenu.Item on:click={toggleMode}
           >Toggle
           {$mode === 'light' ? 'dark' : 'light'} mode

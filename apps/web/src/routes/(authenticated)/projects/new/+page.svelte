@@ -30,8 +30,8 @@
         data: form.data,
       })
 
-      await invalidate('/dashboard/projects')
-      goto('/dashboard/projects')
+      await invalidate('/projects')
+      goto('/projects')
     },
   })
 

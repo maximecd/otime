@@ -15,11 +15,11 @@
     /**
      * Reload the data table
      */
-    await invalidate('/dashboard/clients')
+    await invalidate('/clients')
     /**
      * Redirect to the clients page
      */
-    goto('/dashboard/clients')
+    goto('/clients')
   }
 
   const query = createQuery({

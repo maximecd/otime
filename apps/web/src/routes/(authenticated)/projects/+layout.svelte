@@ -2,11 +2,11 @@
   import { page } from '$app/stores'
   import { ArrowLeft } from 'lucide-svelte'
 
-  $: shouldShow = $page.url.pathname !== '/dashboard/clients'
+  $: shouldShow = $page.url.pathname !== '/projects'
 </script>
 
 <div class="flex flex-col mb-6">
-  <h1 class="text-4xl font-bold tracking-tight">Clients</h1>
+  <h1 class="text-4xl font-bold tracking-tight">Projects</h1>
   {#if shouldShow}
     <a
       href={$page.url.pathname.substring(0, $page.url.pathname.lastIndexOf('/'))}

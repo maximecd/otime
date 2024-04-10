@@ -22,8 +22,8 @@
         data: form.data,
       })
 
-      await invalidate('/dashboard/clients')
-      goto('/dashboard/clients')
+      await invalidate('/clients')
+      goto('/clients')
     },
   })
 
