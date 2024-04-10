@@ -58,6 +58,4 @@ jobs:
     steps:
       - name: Call Webhook
         run: |
-          curl --request GET \
-          --url https://coolify.maximecd.com/api/v1/deploy?uuid=y4gcwcc&force=false \
-          --header 'Authorization: Bearer ${{ secrets.WEBHOOK_TOKEN }}'
+          curl --request GET --url https://coolify.maximecd.com/api/v1/deploy?uuid=y4gcwcc&force=false --header 'Authorization: Bearer ${{ secrets.WEBHOOK_TOKEN }}'
