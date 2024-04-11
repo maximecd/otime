@@ -1,20 +1,47 @@
 <script lang="ts">
   import { fetcher } from '$lib/fetcher'
   import TextSkeleton from '$lib/components/skeletons/text-skeleton.svelte'
-  import { createQuery } from '@tanstack/svelte-query'
+  import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import Button from '$lib/components/ui/button/button.svelte'
   import * as Table from '$lib/components/ui/table'
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
+  import * as AlertDialog from '$lib/components/ui/alert-dialog'
   import { Ellipsis } from 'lucide-svelte'
-  import { formatDuration } from 'date-fns'
   import TimeEntryDialog from '@/components/time-entry-dialog.svelte'
 
   const query = createQuery({
-    queryKey: ['time_entries'],
+    queryKey: ['time-entries'],
     queryFn: () => fetcher('time-entries'),
   })
 
-  let modalOpen = false
+  let entryModal: {
+    open: boolean
+    entry: {
+      id: number
+      projectId: number
+      description: string
+      duration: number
+    } | null
+    type: 'create' | 'edit'
+  } = {
+    open: false,
+    entry: null,
+    type: 'create',
+  }
+
+  let deleteModal = {
+    open: false,
+    id: null,
+  }
+
+  const client = useQueryClient()
+
+  function getDuration(durationInMins: number) {
+    const hours = Math.floor(durationInMins / 60)
+    const minutes = durationInMins % 60
+
+    return `${hours}h${minutes}`
+  }
 </script>
 
 <h1 class="text-4xl font-bold tracking-tight mb-6">Dashboard</h1>
@@ -29,7 +56,9 @@
   </h2>
   <Button
     on:click={() => {
-      modalOpen = true
+      entryModal.open = true
+      entryModal.type = 'create'
+      entryModal.entry = null
     }}>Add a time entry</Button
   >
 </div>
@@ -51,17 +80,10 @@
             {entry.description}
           </Table.Cell>
           <Table.Cell>
-            {formatDuration(
-              {
-                minutes: entry.duration,
-              },
-              {
-                format: ['hours', 'minutes'],
-              }
-            )}
+            {getDuration(entry.duration)}
           </Table.Cell>
           <Table.Cell>
-            {entry.project.name}</Table.Cell
+            {entry.project_name}</Table.Cell
           >
           <Table.Cell class="text-right">
             <DropdownMenu.Root>
@@ -74,10 +96,24 @@
                 <DropdownMenu.Group>
                   <DropdownMenu.Item
                     on:click={() => {
-                      modalOpen = true
+                      entryModal.open = true
+                      entryModal.entry = {
+                        id: entry.id,
+                        projectId: entry.project_id,
+                        description: entry.description,
+                        duration: entry.duration,
+                      }
+                      entryModal.type = 'edit'
                     }}>Edit entry</DropdownMenu.Item
                   >
-                  <DropdownMenu.Item>Delete</DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    on:click={() => {
+                      deleteModal.open = true
+                      deleteModal.id = entry.id
+                    }}
+                  >
+                    Delete entry
+                  </DropdownMenu.Item>
                 </DropdownMenu.Group>
               </DropdownMenu.Content>
             </DropdownMenu.Root>
@@ -103,4 +139,28 @@
   </Table.Body>
 </Table.Root>
 
-<TimeEntryDialog bind:modalOpen />
+<TimeEntryDialog bind:modalState={entryModal} />
+
+<AlertDialog.Root bind:open={deleteModal.open}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Delete entry</AlertDialog.Title>
+      <AlertDialog.Description>
+        This action cannot be undone. Are you sure you want to delete this entry?
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+      <AlertDialog.Action
+        on:click={async () => {
+          await fetcher(`time-entries/${deleteModal.id}`, {
+            method: 'DELETE',
+          })
+          client.invalidateQueries({
+            queryKey: ['time-entries'],
+          })
+        }}>Delete</AlertDialog.Action
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>

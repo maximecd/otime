@@ -14,15 +14,6 @@
     name: string
   }
 
-  let modalOpen = false
-
-  let project: Project | null = null
-
-  function openTimeEntryDialog(p: Project) {
-    project = p
-    modalOpen = true
-  }
-
   const query = createQuery({
     queryKey: ['projects'],
     queryFn: () => fetcher('projects'),
@@ -61,8 +52,8 @@
             </a>
           </Table.Cell>
           <Table.Cell>
-            <a href={`/clients/${project.client.id}`} class="flex items-center"
-              >{project.client.name}
+            <a href={`/clients/${project.client_id}`} class="flex items-center"
+              >{project.client_name}
               <SquareArrowOutUpRight class="h-3 w-3 ml-2" />
             </a>
           </Table.Cell>
@@ -77,9 +68,6 @@
               <DropdownMenu.Content>
                 <DropdownMenu.Group>
                   <DropdownMenu.Item href="/projects/{project.id}">View detail</DropdownMenu.Item>
-                  <DropdownMenu.Item on:click={() => openTimeEntryDialog(project)}
-                    >Add time entry</DropdownMenu.Item
-                  >
                 </DropdownMenu.Group>
               </DropdownMenu.Content>
             </DropdownMenu.Root>
@@ -104,5 +92,3 @@
     {/if}
   </Table.Body>
 </Table.Root>
-
-<TimeEntryDialog bind:modalOpen {project} />

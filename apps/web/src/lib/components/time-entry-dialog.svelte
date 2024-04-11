@@ -8,20 +8,10 @@
 
   import { zod } from 'sveltekit-superforms/adapters'
 
-  import { browser } from '$app/environment'
-
   import { storeTimeEntry } from '@maximecd/schemas'
 
   import { fetcher } from '$lib/fetcher'
-  import { createMutation, useQueryClient } from '@tanstack/svelte-query'
-
-  type Project = {
-    id: number
-    name: string
-    time_entries: Array<{
-      description: string
-    }>
-  }
+  import { useQueryClient } from '@tanstack/svelte-query'
 
   /*
   function mediaQuery(query: string) {
@@ -31,9 +21,16 @@
   const isDesktop = mediaQuery('(min-width: 768px)')
   */
 
-  export let project: Project | null = null
-
-  export let modalOpen: boolean
+  export let modalState: {
+    open: boolean
+    entry: {
+      id: number
+      projectId: number
+      description: string
+      duration: number
+    } | null
+    type: 'create' | 'edit'
+  }
 
   const form = superForm(defaults(zod(storeTimeEntry)), {
     resetForm: false,
@@ -44,8 +41,22 @@
         return
       }
       try {
-        modalOpen = false
-        await $addTimeEntryMutation.mutateAsync(form)
+        // await $addTimeEntryMutation.mutateAsync(form)
+
+        if (modalState.type === 'create') {
+          await fetcher('time-entries', {
+            method: 'POST',
+            form,
+          })
+        } else if (modalState.type === 'edit' && modalState.entry) {
+          await fetcher(`time-entries/${modalState.entry.id}`, {
+            method: 'PUT',
+            form,
+          })
+        }
+
+        client.invalidateQueries({ queryKey: [`time-entries`] })
+        modalState.open = false
       } catch (error) {
         return
       }
@@ -56,6 +67,21 @@
 
   const client = useQueryClient()
 
+  function setFormValues() {
+    if (modalState.entry) {
+      $formData = {
+        ...$formData,
+        description: modalState.entry.description,
+        duration: modalState.entry.duration,
+        projectId: modalState.entry.projectId,
+      }
+    }
+  }
+
+  $: if (modalState.entry) {
+    setFormValues()
+  }
+
   // on Open state change
   // $: if (modalOpen && project) {
   //   form.reset({
@@ -64,7 +90,7 @@
   //     },
   //   })
   // }
-
+  /*
   const addTimeEntryMutation = createMutation({
     mutationFn: async (form: SuperValidated<Infer<typeof storeTimeEntry>>) => {
       await fetcher('time-entries', {
@@ -103,22 +129,30 @@
     onSettled: () => {
       client.invalidateQueries({ queryKey: [`project-${project.id}`] })
     },
-  })
+  })*/
 </script>
 
-<Dialog.Root bind:open={modalOpen}>
+<Dialog.Root bind:open={modalState.open}>
   <Dialog.Content>
     <Dialog.Header>
-      <Dialog.Title>Add a time entry</Dialog.Title>
-      <Dialog.Description>
-        Project : {project?.name}
-      </Dialog.Description>
+      <Dialog.Title>
+        {#if modalState.type === 'edit'}
+          Edit time entry
+        {:else}
+          Add a time entry
+        {/if}
+      </Dialog.Title>
     </Dialog.Header>
     <form method="POST" use:enhance>
       <Form.Field {form} name="projectId">
         <Form.Control let:attrs>
           <Form.Label>Project</Form.Label>
-          <Input {...attrs} bind:value={$formData.projectId} type="number" />
+          <Input
+            {...attrs}
+            bind:value={$formData.projectId}
+            type="number"
+            disabled={modalState.projectId !== null}
+          />
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
@@ -136,7 +170,13 @@
         </Form.Control>
         <Form.FieldErrors />
       </Form.Field>
-      <Form.Button class="w-full">Save Entry</Form.Button>
+      <Form.Button class="w-full">
+        {#if modalState.type === 'edit'}
+          Update Entry
+        {:else}
+          Add Entry
+        {/if}
+      </Form.Button>
     </form>
   </Dialog.Content>
 </Dialog.Root>

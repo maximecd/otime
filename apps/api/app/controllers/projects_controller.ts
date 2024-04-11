@@ -2,6 +2,7 @@ import Client from '#models/client'
 import Project from '#models/project'
 import ClientPolicy from '#policies/client_policy'
 import type { HttpContext } from '@adonisjs/core/http'
+import db from '@adonisjs/lucid/services/db'
 import { storeProject } from '@maximecd/schemas'
 
 export default class ProjectsController {
@@ -9,10 +10,13 @@ export default class ProjectsController {
    * Display a list of resource
    */
   async index({ auth }: HttpContext) {
-    const projects = await Project.query()
-      .preload('client')
+    const projects = await db
+      .from('projects')
       .join('clients', 'projects.client_id', 'clients.id')
       .where('clients.user_id', auth.user!.id)
+      .select('projects.*')
+      .select('clients.name as client_name')
+      .select('clients.id as client_id')
 
     return projects
   }
