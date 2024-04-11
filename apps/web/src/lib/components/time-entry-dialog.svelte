@@ -80,6 +80,8 @@
 
   $: if (modalState.entry) {
     setFormValues()
+  } else {
+    form.reset()
   }
 
   // on Open state change
@@ -151,7 +153,7 @@
             {...attrs}
             bind:value={$formData.projectId}
             type="number"
-            disabled={modalState.projectId !== null}
+            disabled={modalState.entry !== null}
           />
         </Form.Control>
         <Form.FieldErrors />
