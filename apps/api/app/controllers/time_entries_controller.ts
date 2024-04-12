@@ -44,7 +44,9 @@ export default class TimeEntriesController {
   /**
    * Show individual record
    */
-  async show({}: HttpContext) {}
+  async show({}: HttpContext) {
+    //TODO: Implement
+  }
 
   /**
    * Handle form submission for the edit action

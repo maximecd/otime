@@ -11,13 +11,6 @@ type AuthStore = {
   status: 'init' | 'loading' | 'loaded'
 }
 
-type UserRes = {
-  user: {
-    email: string
-    fullName: string
-  }
-}
-
 const initialState: AuthStore = {
   user: null,
   status: 'init',
