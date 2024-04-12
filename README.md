@@ -7,6 +7,8 @@ If you are just here to take a look at my work, feel free to create an account o
 
 I plan to write articles on my journey self-hosting and dockerizing a pnpm typescript monorepo, which is why this is repo is open source!
 
+The more i will use the app, the more i plan on improving it, as i get more familiar with AdonisJS (i come from the laravel side :D)
+
 ## Installation
 
 If you want to boot up the project in dev mode, it's simple.
