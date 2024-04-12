@@ -32,15 +32,9 @@ const createAuthStore = () => {
 
   subscribe((value) => {
     if (!browser) return
-    if (value.status !== 'loaded') return
-
+    if (value.status === 'init') return
     state = value
-
-    if (value.user) {
-      localStorage.setItem(localStorageKey, JSON.stringify(value.user))
-    } else {
-      localStorage.removeItem(localStorageKey)
-    }
+    localStorage.setItem(localStorageKey, JSON.stringify(value))
   })
 
   /**
@@ -55,25 +49,37 @@ const createAuthStore = () => {
    */
 
   async function init() {
-    if (!browser) return
+    const localValue = localStorage.getItem(localStorageKey)
 
-    const user = localStorage.getItem(localStorageKey)
-
-    if (!user) {
+    if (!localValue || !JSON.parse(localValue).user) {
       set({ user: null, status: 'loaded' })
       return
     }
 
     // set the user from local storage
-    set({ user: JSON.parse(user), status: 'loading' })
+    set({ user: JSON.parse(localValue).user, status: 'loading' })
 
     // refetch the user to make sure it's still valid
+    // dont await this, we don't want to block the UI
+    refetchUser()
+  }
+
+  async function refetchUser() {
+    let response
+
     try {
-      const res: UserRes = await fetcher('auth/me')
-      set({ user: res.user, status: 'loaded' })
-    } catch (error) {
+      response = await fetcher('auth/me')
+      set({ user: response.user, status: 'loaded' })
+      return
+    } catch (e) {
+      console.error('Error fetching user', e)
+    }
+
+    // if we get a 401, the user is no longer valid
+    // else we just ignore this, it could be a network / server error
+    if (response?.status === 401) {
       set({ user: null, status: 'loaded' })
-      localStorage.removeItem(localStorageKey)
+      return
     }
   }
 

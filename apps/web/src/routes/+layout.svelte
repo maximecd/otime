@@ -4,8 +4,6 @@
   import '../app.pcss'
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
   import { browser } from '$app/environment'
-  import { onMount } from 'svelte'
-  import { authStore } from '@/stores/authStore'
 
   const queryClient = new QueryClient({
     defaultOptions: {

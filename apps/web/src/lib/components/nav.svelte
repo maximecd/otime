@@ -36,7 +36,7 @@
 </script>
 
 <nav class="border rounded-r-md p-2 min-w-52 flex flex-col">
-  <p class="font-bold text-md my-4 text-center pointer-events-none select-none">Timetracker</p>
+  <p class="font-bold text-md my-4 text-center pointer-events-none select-none">otime</p>
 
   <ul class="flex flex-col gap-1">
     {#each routes as route}
