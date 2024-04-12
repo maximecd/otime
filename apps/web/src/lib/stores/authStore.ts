@@ -65,14 +65,13 @@ const createAuthStore = () => {
       set({ user: response.user, status: 'loaded' })
       return
     } catch (e) {
+      // if we get a 401, the user is no longer valid
+      // else we just ignore this, it could be a network / server error
+      if (e.response?.status === 401) {
+        set({ user: null, status: 'loaded' })
+        return
+      }
       console.error('Error fetching user', e)
-    }
-
-    // if we get a 401, the user is no longer valid
-    // else we just ignore this, it could be a network / server error
-    if (response?.status === 401) {
-      set({ user: null, status: 'loaded' })
-      return
     }
   }
 

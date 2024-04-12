@@ -62,6 +62,7 @@ export async function fetcher<T extends Record<string, unknown>>(
 
     return json
   } catch (e) {
+    e.response = response
     console.error('Error fetching data', e)
     throw e
   }
